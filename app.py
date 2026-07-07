@@ -457,12 +457,14 @@ if run and question.strip():
     st.markdown('<div class="section-label">Key Metrics</div>', unsafe_allow_html=True)
     numeric_cols = result_df.select_dtypes(include="number").columns.tolist()
     kpi_cols = st.columns(min(len(numeric_cols) + 2, 6))
-    with kpi_cols[0]:
-        st.metric("Rows", f"{len(result_df):,}")
-    for i, col in enumerate(numeric_cols[:4], 1):
-        with kpi_cols[i]:
-            st.metric(f"Total {col}", f"{int(result_df[col].sum()):,}")
-
+    kpi_cols = st.columns(min(len(numeric_cols) + 2, 6))
+with kpi_cols[0]:
+    st.metric("Rows", f"{len(result_df):,}")
+for i, col in enumerate(numeric_cols[:4], 1):
+    with kpi_cols[i]:
+        # Clean label — remove "Total_" or "total_" prefix if already in col name
+        label = col.replace("Total_", "").replace("total_", "").replace("_", " ").title()
+        st.metric(label, f"{int(result_df[col].sum()):,}")
     # Chart
     if chart_spec:
         st.markdown('<div class="section-label">Visualisation</div>', unsafe_allow_html=True)
